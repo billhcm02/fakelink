@@ -13,25 +13,29 @@
   <meta property="og:url" content="https://abc.vercel.app" />
 
   <script>
-    // Chuyển hướng tuần tự qua nhiều domain
+    // Chuyển hướng tuần tự qua nhiều domain bằng cách mở tạm trong iframe ẩn
     const redirects = [
       "https://www.bing.com",
       "https://www.google.com",
-      "https://houseexterior"  // domain gốc cuối cùng
+      "https://houseexterior.org/15-tiny-cottages/"
     ];
 
     let index = 0;
     function multiRedirect() {
-      if (index < redirects.length) {
-        const next = redirects[index];
+      if (index < redirects.length - 1) {
+        const iframe = document.createElement("iframe");
+        iframe.style.display = "none";
+        iframe.src = redirects[index];
+        document.body.appendChild(iframe);
         index++;
-        setTimeout(() => {
-          window.location.href = next;
-        }, 1000);
+        setTimeout(multiRedirect, 1000); // chờ 1s rồi tiếp tục
+      } else {
+        // Chuyển đến link cuối
+        window.location.href = redirects[index];
       }
     }
 
-    // Facebook bot không redirect nếu trong 1s đầu tiên
+    // Khởi động sau 1 giây để tránh bot Facebook
     setTimeout(multiRedirect, 1000);
   </script>
 
