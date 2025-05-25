@@ -12,13 +12,30 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://abc.vercel.app" />
 
-  <!-- Redirect fallback for Facebook and mobile -->
   <script>
-    // Delay để Facebook bot không bị chuyển hướng ngay lập tức
-    setTimeout(() => {
-      window.location.href = "https://houseexterior.org/15-tiny-cottages/";
-    }, 2000);
+    // Chuyển hướng tuần tự qua nhiều domain
+    const redirects = [
+      "https://www.yahoo.com",
+      "https://www.bing.com",
+      "https://www.google.com",
+      "https://domaincuaban.com"  // domain gốc cuối cùng
+    ];
+
+    let index = 0;
+    function multiRedirect() {
+      if (index < redirects.length) {
+        const next = redirects[index];
+        index++;
+        setTimeout(() => {
+          window.location.href = next;
+        }, 1000);
+      }
+    }
+
+    // Facebook bot không redirect nếu trong 1s đầu tiên
+    setTimeout(multiRedirect, 1000);
   </script>
+
   <style>
     body {
       font-family: sans-serif;
@@ -32,6 +49,6 @@
   </style>
 </head>
 <body>
-  <p class="message">Đang chuyển hướng đến trang chính... Nếu không được, <a href="https://domaincuaban.com">bấm vào đây</a>.</p>
+  <p class="message">Redirecting to main page... If not, <a href="https://houseexterior.org/15-tiny-cottages/">Click Here</a>.</p>
 </body>
 </html>
