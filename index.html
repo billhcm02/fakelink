@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Fake Link Generator</title>
+  <title>Fake Link Uploader</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -44,74 +44,69 @@
     }
     .preview {
       margin-top: 2rem;
-      word-break: break-word;
-    }
-    .image-preview {
-      margin-top: 1rem;
-      max-width: 100%;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h2>Fake Link Generator</h2>
-    <label for="alias-domain">Domain giả (ví dụ: docbao.com):</label>
-    <input type="text" id="alias-domain" placeholder="docbao.com" />
+    <h2>Tạo trang chia sẻ fake</h2>
+    <label>Domain giả (hiện trên Facebook):</label>
+    <input type="text" id="fake-domain" placeholder="Ví dụ: youtube.com" />
 
-    <label for="real-domain">Domain gốc (ví dụ: domaingoc.com):</label>
-    <input type="text" id="real-domain" placeholder="https://domaingoc.com" />
+    <label>Domain gốc (nơi chuyển hướng đến):</label>
+    <input type="text" id="real-domain" placeholder="https://domaincuaban.com" />
 
-    <label for="image-upload">Tải ảnh lên (hiển thị khi chia sẻ link):</label>
+    <label>Chọn ảnh đại diện (hiện trên Facebook):</label>
     <input type="file" id="image-upload" accept="image/*" />
 
-    <button onclick="generateFakeLink()">Tạo link chia sẻ</button>
+    <button onclick="generateHtml()">Tạo file HTML chia sẻ</button>
 
-    <div class="preview" id="result"></div>
+    <div class="preview" id="output"></div>
   </div>
 
   <script>
-    async function generateFakeLink() {
-      const alias = document.getElementById("alias-domain").value.trim();
-      const real = document.getElementById("real-domain").value.trim();
-      const imageInput = document.getElementById("image-upload");
+    function generateHtml() {
+      const fakeDomain = document.getElementById("fake-domain").value.trim();
+      const realDomain = document.getElementById("real-domain").value.trim();
+      const imageInput = document.getElementById("image-upload").files[0];
 
-      if (!alias || !real || !imageInput.files.length) {
-        alert("Vui lòng điền đầy đủ thông tin và chọn hình ảnh.");
+      if (!fakeDomain || !realDomain || !imageInput) {
+        alert("Vui lòng nhập đủ thông tin và chọn ảnh.");
         return;
       }
 
-      const file = imageInput.files[0];
       const reader = new FileReader();
-
       reader.onload = function (e) {
         const imageDataUrl = e.target.result;
-        const html = `<!DOCTYPE html>
-<html>
+        const fileName = fakeDomain.replace(/\W+/g, "_") + "_share.html";
+        const htmlContent = `<!DOCTYPE html>
+<html lang="en">
   <head>
-    <meta property="og:title" content="${alias}" />
+    <meta charset="UTF-8">
+    <meta property="og:title" content="${fakeDomain}" />
     <meta property="og:image" content="${imageDataUrl}" />
-    <meta property="og:description" content="Tin hot mới nhất!" />
+    <meta property="og:description" content="Xem ngay nội dung hấp dẫn này!" />
     <meta property="og:type" content="website" />
-    <meta http-equiv="refresh" content="0; url=${real}" />
-    <title>Redirecting...</title>
+    <meta http-equiv="refresh" content="0; url=${realDomain}" />
+    <title>Đang chuyển hướng...</title>
   </head>
   <body>
-    <img src="${imageDataUrl}" alt="Preview Image" style="max-width:100%;" />
-    <p>Đang chuyển hướng đến <a href="${real}">${real}</a>...</p>
+    <p>Đang chuyển hướng đến <a href="${realDomain}">${realDomain}</a>...</p>
   </body>
 </html>`;
 
-        const blob = new Blob([html], { type: "text/html" });
+        const blob = new Blob([htmlContent], { type: "text/html" });
         const url = URL.createObjectURL(blob);
+
         const link = document.createElement("a");
         link.href = url;
-        link.download = `${alias.replace(/\./g, '_')}_fakelink.html`;
-        link.click();
-
-        document.getElementById("result").innerHTML = `✅ File đã được tạo: <a href="${url}" target="_blank">Xem trước trang</a>`;
+        link.download = fileName;
+        link.textContent = `⬇️ Tải file HTML để upload lên Vercel (abc.vercel.app/${fileName})`;
+        document.getElementById("output").innerHTML = "";
+        document.getElementById("output").appendChild(link);
       };
 
-      reader.readAsDataURL(file);
+      reader.readAsDataURL(imageInput);
     }
   </script>
 </body>
