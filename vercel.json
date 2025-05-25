@@ -1,0 +1,5 @@
+{
+  "rewrites": [
+    { "source": "/", "destination": "/docbao_com_redirect.html" }
+  ]
+}
